@@ -11,8 +11,24 @@ class CartItem extends React.Component {
         }
     }
     increaseQuantity=()=>{
-        console.log(this)
+        this.setState((prevState)=>{
+          return {
+            qty: prevState.qty+1
+          }
+        },()=>{
+          console.log(this.state)
+        })
 
+    }
+
+    decreseQuantity=()=>{
+      const {qty}=this.state;
+      if(qty==0)return
+      this.setState((prevState)=>{
+        return {
+          qty: prevState.qty-1
+        }
+      })
     }
       
     
@@ -28,9 +44,9 @@ class CartItem extends React.Component {
             <div style={ { color: '#777' } }>RS {price}</div>
             <div style={ { color: '#777' } }>QTY: {qty}</div>
             <div className="cart-item-actions">
-                <img alt="increase"  onClick={this.increaseQuantity} className="action-icons" src="https://cdn-icons-png.flaticon.com/512/992/992683.png" 
+                <img alt="increase"  onClick={this.increaseQuantity} className="action-icons" src="https://cdn-icons.flaticon.com/png/512/3303/premium/3303893.png?token=exp=1641376809~hmac=d5c2fefc9ffac1828667728afd96f130"
                />
-                <img alt="decrease" className="action-icons" src="https://cdn-icons.flaticon.com/png/512/3303/premium/3303893.png?token=exp=1641376809~hmac=d5c2fefc9ffac1828667728afd96f130" />
+                <img alt="decrease" onClick={this.decreseQuantity} className="action-icons" src="https://cdn-icons-png.flaticon.com/512/992/992683.png" />
                 <img alt="delete" className="action-icons" src="https://cdn-icons-png.flaticon.com/512/3096/3096673.png"></img>
             </div>
           </div>
