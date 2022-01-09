@@ -4,37 +4,59 @@ import Cart  from "./Cart";
 
 import Navbar  from "./Navbar";
 
+import db from "./Firebase";
+
+import {collection ,getDocs,addDoc} from 'firebase/firestore'
+
+
+
+
+
+
+
+
+// Add a new document with a generated id.
+
+
+
 
 class App extends React.Component {
   constructor(){
     super();
     this.state={
-        products: [
-            {
-                price: 999,
-                title: 'Watch',
-                qty: 1,
-                img: 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80',
-                id: 2
-            },
-            {
-                price: 999,
-                title: 'phone',
-                qty: 10,
-                img: 'https://images.unsplash.com/photo-1520923642038-b4259acecbd7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=819&q=80',
-                id: 3
-            },
-            {
-                price: 999,
-                title: 'Laptop',
-                qty: 4,
-                img: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80',
-                id: 4
-            }
-        ]
+        products: [],
+        loading: true
         
     }
 }
+
+componentDidMount(){
+  
+   const colRef=collection(db,'products')
+  
+   getDocs(colRef)
+   .then((snapshot)=>{
+     
+     snapshot.docs.map((doc)=>{
+     
+     })
+    
+     const products=snapshot.docs.map((doc)=>{
+       const data=doc.data();
+       data["id"]=doc.id;
+       return data
+     })
+  
+
+   this.setState({
+     products,
+     loading: false
+   })
+  })
+
+ 
+}
+
     handleIncreaseQuantity =(product)=>{
       const {products}=this.state;
       const index=products.indexOf(product);
@@ -45,17 +67,20 @@ class App extends React.Component {
       })
     }
 
-    handleDecreaseQuantity =(product)=>{
+    handleDecreaseQuantity =async (product)=>{
         const {products}=this.state;
         const index=products.indexOf(product);
 
-        if(products[index].qty===0)return;
         products[index].qty-=1;
 
         this.setState({
             products: products
         })
       }
+
+   
+
+    
 
       handleDeleteProduct=(id)=>{
           const {products}=this.state;
@@ -92,14 +117,29 @@ class App extends React.Component {
       })
       return ts;
     }
+
+    addProduct=async ()=>{
+       const docRef=await addDoc(collection(db, "products"), {
+       title: "TV",
+       price: 8888,
+       qty: 1,
+       img: "https://cdn-icons-png.flaticon.com/512/3159/3159461.png"
+      })
+
+     
+     
+
+    }
   
 
   render(){
-    const {products}=this.state;
+    const {products,loading}=this.state;
     return (
       <div className="App">
         <Navbar count={this.getCartCount()} />
+        {/* <button onClick={this.addProduct} style={{padding: 20,fontSize: 20}}>add a product</button> */}
         <Cart  products={products} onIncreaseQuantity={this.handleIncreaseQuantity} onDecreaseQuantity={this.handleDecreaseQuantity} handleDelete={this.handleDeleteProduct}/>
+        {loading && <h1>Loading Products..</h1>}
         <div style={{padding: 10,fontSize: 20,textAlign: "center"}}>
           TOTAL: {this.getCartTtotal()}
         </div>
